@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Content Generator</title>
+    <link rel="icon" type="image/svg+xml" th:href="@{/logo.svg}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="container">
+    <header>
+        <div class="header-top">
+            <div class="logo">
+                <img th:src="@{/logo.svg}" alt="Logo">
+            </div>
+            <div class="brand-name">LIGON TEAM</div>
+        </div>
+        <h1>Content Generator</h1>
+        <p class="subtitle">Tạo nội dung sản phẩm tự động từ ảnh và thông tin</p>
+    </header>
+
+    <div class="content-wrapper">
+        <!-- Form Section -->
+        <div class="form-section">
+            <form id="contentForm" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="apiKey">ChatGPT API Key</label>
+                    <input type="text" id="apiKey" name="apiKey" placeholder="sk-proj-..." required>
+                </div>
+
+                <div class="form-group">
+                    <label for="productImage">Ảnh sản phẩm</label>
+                    <div class="image-preview-container" id="imagePreviewContainer">
+                        <img id="imagePreview" class="image-preview">
+                        <div class="placeholder-text" id="placeholderText">
+                            Kéo thả ảnh hoặc nhấp để chọn
+                        </div>
+                    </div>
+                    <input type="file" id="productImage" name="productImage" accept="image/*" required style="display: none;">
+                </div>
+
+                <div class="form-group">
+                    <label for="dimensions">Kích thước (WxHxD)</label>
+                    <input type="text" id="dimensions" name="dimensions" placeholder="Ví dụ: 4x4x0.1 in">
+                </div>
+
+                <div class="form-group">
+                    <label for="material">Vật liệu</label>
+                    <input type="text" id="material" name="material" placeholder="Ví dụ: Wood">
+                </div>
+
+                <div class="form-group">
+                    <label for="tags">Tags (cách nhau bằng dấu phẩy)</label>
+                    <textarea id="tags" name="tags" placeholder="christmas ornaments, christmas name tag, letter ornament,..."></textarea>
+                </div>
+
+                <button type="submit" class="button button-primary generate-button">
+                    <span class="spinner" style="display: none;" id="buttonSpinner"></span>
+                    <span id="buttonText">Tạo nội dung</span>
+                </button>
+
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <div style="margin-top: 8px;">Đang xử lý...</div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Output Section -->
+        <div class="output-section">
+            <div class="output-card">
+                <div class="output-header">
+                    <span class="output-label">Tiêu đề</span>
+                    <button type="button" class="button button-secondary button-small" onclick="copyOutput('title')">Sao chép</button>
+                </div>
+                <div class="output-content empty" id="titleOutput">Nội dung sẽ hiển thị ở đây</div>
+                <div class="feedback-message" id="titleFeedback">Đã sao chép!</div>
+            </div>
+
+            <div class="output-card">
+                <div class="output-header">
+                    <span class="output-label">Mô tả</span>
+                    <button type="button" class="button button-secondary button-small" onclick="copyOutput('description')">Sao chép</button>
+                </div>
+                <div class="output-content empty" id="descriptionOutput">Nội dung sẽ hiển thị ở đây</div>
+                <div class="feedback-message" id="descriptionFeedback">Đã sao chép!</div>
+            </div>
+
+            <div class="output-card">
+                <div class="output-header">
+                    <span class="output-label">5 Điểm nổi bật</span>
+                    <button type="button" class="button button-secondary button-small" onclick="copyOutput('bulletPoints')">Sao chép</button>
+                </div>
+                <div class="output-content empty" id="bulletPointsOutput">Nội dung sẽ hiển thị ở đây</div>
+                <div class="feedback-message" id="bulletPointsFeedback">Đã sao chép!</div>
+            </div>
+
+            <div class="output-card">
+                <div class="output-header">
+                    <span class="output-label">Tags</span>
+                    <button type="button" class="button button-secondary button-small" onclick="copyOutput('tags')">Sao chép</button>
+                </div>
+                <div class="output-content empty" id="tagsOutput">Nội dung sẽ hiển thị ở đây</div>
+                <div class="feedback-message" id="tagsFeedback">Đã sao chép!</div>
+            </div>
+
+            <div class="output-card">
+                <div class="output-header">
+                    <span class="output-label">Slug</span>
+                    <button type="button" class="button button-secondary button-small" onclick="copyOutput('slugs')">Sao chép</button>
+                </div>
+                <div class="output-content empty" id="slugsOutput">Nội dung sẽ hiển thị ở đây</div>
+                <div class="feedback-message" id="slugsFeedback">Đã sao chép!</div>
+            </div>
+
+            <div class="copy-all-section">
+                <button type="button" class="button button-primary" style="width: 100%;" onclick="copyAllForSheet()">
+                    Sao chép tất cả (Google Sheet)
+                </button>
+                <div class="feedback-message" id="copyAllFeedback">Đã sao chép!</div>
+                <p style="font-size: 12px; color: hsl(var(--muted-foreground)); margin-top: 8px;">
+                    ℹ️ Sao chép để dán vào một hàng trong Google Sheet
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="drag-overlay" id="dragOverlay">
+    Thả ảnh để tải lên
+</div>
+<script th:src="@{/js/script.js}"></script>
+</body>
+</html>
