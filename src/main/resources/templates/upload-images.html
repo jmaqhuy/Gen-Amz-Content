@@ -31,6 +31,7 @@
   <div class="alert alert-error hidden" id="errorAlert"></div>
 
   <div class="content-wrapper">
+
     <div class="upload-section">
       <div class="upload-zone" id="uploadZone">
         <div class="upload-icon">📤</div>
@@ -40,7 +41,10 @@
       </div>
 
       <div class="preview-grid" id="previewGrid"></div>
-
+      <div class="form-group">
+        <label for="ligonToken">Ligon Token</label>
+        <input type="text" id="ligonToken" name="ligonToken" placeholder="ligon-token..." required>
+      </div>
       <button class="button button-primary" id="uploadButton" disabled>
         <span id="uploadButtonText">Chọn ảnh để upload</span>
       </button>
@@ -79,6 +83,6 @@
   </div>
 </div>
 
-
+<script th:src="@{/js/upload-images-script.js}"></script>
 </body>
 </html>

@@ -1,6 +1,7 @@
 package com.example.ai_gen_amz_content;
 
 import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -19,10 +20,13 @@ import java.util.List;
 import java.util.Random;
 
 @Service
+@RequiredArgsConstructor
 public class ImageService {
 
-    @Value("${upload.path:uploads}")
+    @Value("${storage.location:/images}")
     private String uploadPath;
+
+    private final AuthenticationService auth;
 
     private Path rootLocation;
     private final Random random = new Random();
@@ -44,7 +48,12 @@ public class ImageService {
     /**
      * Lưu nhiều ảnh
      */
-    public List<String> saveImages(MultipartFile[] files) throws IOException {
+    public List<String> saveImages(MultipartFile[] files, String token) throws IOException {
+        Boolean valid = auth.introspectToken(token);
+        if (!valid) {
+            throw new IllegalArgumentException("Token không hợp lệ hoặc đã hết hạn");
+        }
+
         List<String> urls = new ArrayList<>();
 
         for (MultipartFile file : files) {

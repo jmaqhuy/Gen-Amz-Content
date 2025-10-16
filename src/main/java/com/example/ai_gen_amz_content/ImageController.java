@@ -23,7 +23,8 @@ public class ImageController {
      * Upload ảnh (tối đa 8 ảnh cùng lúc)
      */
     @PostMapping(value = "/api/images/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> uploadImages(@RequestParam("files") MultipartFile[] files) {
+    public ResponseEntity<?> uploadImages(@RequestParam("files") MultipartFile[] files,
+                                          @RequestParam("ligonToken") String ligonToken) {
         try {
             // Kiểm tra số lượng file
             if (files.length > 8) {
@@ -37,7 +38,7 @@ public class ImageController {
                         .body(Map.of("error", "Vui lòng chọn ít nhất 1 ảnh"));
             }
 
-            List<String> imageUrls = imageService.saveImages(files);
+            List<String> imageUrls = imageService.saveImages(files, ligonToken);
 
             Map<String, Object> response = new HashMap<>();
             response.put("message", "Upload thành công");

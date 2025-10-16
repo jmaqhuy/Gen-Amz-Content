@@ -1,0 +1,18 @@
+version: "3.9"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./images:/images  # Thư mục images trong project sẽ map vào /images trong container
+    environment:
+      - STORAGE_LOCATION=/images  # Nếu ứng dụng dùng @Value("${storage.location:/images}")
+      - APP_SECURITY_JWT_SECRET=
+
+# Không cần khai báo named volume nữa, vì đã mount trực tiếp ra host
+# volumes:
+#   image-storage:

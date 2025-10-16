@@ -99,14 +99,16 @@ updateUploadButton();
 
     uploadButton.addEventListener('click', async () => {
     if (selectedFiles.length === 0) return;
-
+    const token = document.getElementById('ligonToken').value.trim();
+    if (!token) return showAlert('error', 'Vui lòng nhập Ligon Token!');
     uploadButton.disabled = true;
     uploadButtonText.innerHTML = '<span class="spinner"></span> Đang upload...';
 
     const formData = new FormData();
     selectedFiles.forEach(file => {
-    formData.append('files', file);
-});
+        formData.append('files', file);
+    });
+    formData.append('ligonToken', token);
 
     try {
     const response = await fetch(`${API_BASE}/upload`, {
