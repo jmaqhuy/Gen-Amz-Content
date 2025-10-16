@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Content Generator</title>
+    <title>Ligon Content Generator</title>
     <link rel="icon" type="image/svg+xml" th:href="@{/logo.svg}">
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
@@ -16,7 +16,13 @@
             </div>
             <div class="brand-name">LIGON TEAM</div>
         </div>
-        <h1>Content Generator</h1>
+        <nav class="main-nav">
+            <ul>
+                <li><a th:href="@{/}" th:classappend="${currentPage == 'home' ? 'active' : ''}">Content Generator</a></li>
+                <li><a th:href="@{/images}" th:classappend="${currentPage == 'images' ? 'active' : ''}">Upload Images</a></li>
+            </ul>
+        </nav>
+        <h1>Ligon Content Generator</h1>
         <p class="subtitle">Tạo nội dung sản phẩm tự động từ ảnh và thông tin</p>
     </header>
 

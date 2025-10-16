@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Upload</title>
+  <link rel="icon" type="image/svg+xml" th:href="@{/logo.svg}">
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+  <link rel="stylesheet" th:href="@{/css/upload-image-style.css}">
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="header-top">
+      <div class="logo">
+        <img th:src="@{/logo.svg}" alt="Logo">
+      </div>
+      <div class="brand-name">LIGON TEAM</div>
+    </div>
+    <nav class="main-nav">
+      <ul>
+        <li><a th:href="@{/}" th:classappend="${currentPage == 'home' ? 'active' : ''}">Content Generator</a></li>
+        <li><a th:href="@{/images}" th:classappend="${currentPage == 'images' ? 'active' : ''}">Upload Images</a></li>
+      </ul>
+    </nav>
+    <h1>Ligon Upload Image</h1>
+    <p class="subtitle">Tải lên tối đa 8 ảnh cùng lúc và nhận link</p>
+  </header>
+
+  <div class="alert alert-success hidden" id="successAlert"></div>
+  <div class="alert alert-error hidden" id="errorAlert"></div>
+
+  <div class="content-wrapper">
+    <div class="upload-section">
+      <div class="upload-zone" id="uploadZone">
+        <div class="upload-icon">📤</div>
+        <div class="upload-text">Kéo thả ảnh vào đây hoặc click để chọn</div>
+        <div class="upload-hint">Hỗ trợ: JPG, PNG, GIF, WEBP, BMP (tối đa 8 ảnh)</div>
+        <input type="file" id="fileInput" class="file-input" multiple accept="image/*">
+      </div>
+
+      <div class="preview-grid" id="previewGrid"></div>
+
+      <button class="button button-primary" id="uploadButton" disabled>
+        <span id="uploadButtonText">Chọn ảnh để upload</span>
+      </button>
+    </div>
+
+    <div class="result-section">
+      <div class="stats">
+        <div class="stat-item">
+          <div class="stat-label">Số ảnh đã chọn</div>
+          <div class="stat-value" id="selectedCount">0</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">Đã upload</div>
+          <div class="stat-value" id="uploadedCount">0</div>
+        </div>
+      </div>
+
+      <div class="result-card">
+        <div class="result-header">
+          <div class="result-title">Kết quả Upload</div>
+        </div>
+        <div class="result-content empty" id="resultContent">
+          Chưa có ảnh nào được upload
+        </div>
+      </div>
+
+      <div class="copy-section">
+        <button class="button button-secondary" id="copyButton" style="width: 100%;" disabled>
+          📋 Copy tất cả URL (Google Sheets)
+        </button>
+        <div class="upload-hint" style="margin-top: 8px; text-align: center;">
+          URLs sẽ được copy dưới dạng hàng ngang, ngăn cách bởi tab
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+</body>
+</html>

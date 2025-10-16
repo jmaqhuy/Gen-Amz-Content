@@ -146,8 +146,12 @@ function updateOutput(id, content) {
 
 function copyOutput(type) {
     const element = document.getElementById(type + 'Output');
-    const text = element.textContent;
-
+    let text;
+    if (type === 'slugs') {
+        text = '"' + element.textContent.trim().replace(/"/g, '""') + '"';
+    } else {
+        text = element.textContent;
+    }
     navigator.clipboard.writeText(text).then(() => {
         showFeedback(type + 'Feedback');
     });
@@ -162,9 +166,9 @@ function copyAllForSheet() {
 
     // Split bullet points by newline for separate columns
     const bulletArray = bulletPoints.split('\n').filter(b => b.trim());
-    const slugsArray = slugs.split('\n').filter(b => b.trim());
+    const slugsCell = '"' + slugs.trim().replace(/"/g, '""') + '"';
     // Format for Google Sheet (tab-separated for columns)
-    const sheetText = [title, description, ...bulletArray, tags, ...slugsArray].join('\t');
+    const sheetText = [title, description, ...bulletArray, tags, slugsCell].join('\t');
 
     navigator.clipboard.writeText(sheetText).then(() => {
         showFeedback('copyAllFeedback');

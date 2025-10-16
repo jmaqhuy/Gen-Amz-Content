@@ -73,6 +73,34 @@ header {
     color: hsl(var(--foreground));
 }
 
+.main-nav {
+    margin-bottom: 24px;
+}
+
+.main-nav ul {
+    display: flex;
+    gap: 24px;
+    list-style: none;
+}
+
+.main-nav a {
+    text-decoration: none;
+    color: hsl(var(--muted-foreground));
+    font-size: 16px;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.main-nav a:hover {
+    color: hsl(var(--foreground));
+}
+
+.main-nav a.active {
+    color: hsl(var(--foreground));
+    border-bottom: 2px solid hsl(var(--primary));
+    padding-bottom: 4px;
+}
+
 h1 {
     font-size: 28px;
     font-weight: 600;
