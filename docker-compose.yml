@@ -11,7 +11,7 @@ services:
       - ./images:/images  # Thư mục images trong project sẽ map vào /images trong container
     environment:
       - STORAGE_LOCATION=/images  # Nếu ứng dụng dùng @Value("${storage.location:/images}")
-      - APP_SECURITY_JWT_SECRET=
+      - APP_SECURITY_JWT_SECRET=1bacddc4e4e0ae4ed91481908f82722d401ead234f699b37fed6bfbfbf83a9e0
 
 # Không cần khai báo named volume nữa, vì đã mount trực tiếp ra host
 # volumes:

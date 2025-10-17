@@ -161,9 +161,12 @@ updateUploadButton();
     if (uploadedUrls.length === 0) return;
 
     // Copy as tab-separated values for horizontal paste in Google Sheets
-    const textToCopy = uploadedUrls.join('\t');
+        const textToCopy = uploadedUrls
+            .map(url => url.replace(/^http:\/\//, 'https://'))
+            .join('\t');
 
-    navigator.clipboard.writeText(textToCopy).then(() => {
+
+        navigator.clipboard.writeText(textToCopy).then(() => {
     const originalText = copyButton.innerHTML;
     copyButton.innerHTML = '✓ Đã copy!';
     copyButton.style.background = 'hsl(var(--success))';
