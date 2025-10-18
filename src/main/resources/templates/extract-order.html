@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ligon PDF Order Extractor</title>
+    <link rel="icon" type="image/svg+xml" th:href="@{/logo.svg}">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --background: 0 0% 8%;
+            --foreground: 0 0% 95%;
+            --card: 0 0% 12%;
+            --card-foreground: 0 0% 95%;
+            --primary: 0 0% 100%;
+            --primary-foreground: 0 0% 100%;
+            --secondary: 0 0% 15%;
+            --secondary-foreground: 0 0% 90%;
+            --muted: 0 0% 30%;
+            --muted-foreground: 0 0% 65%;
+            --accent: 0 0% 20%;
+            --accent-foreground: 0 0% 100%;
+            --border: 0 0% 30%;
+            --input: 0 0% 15%;
+            --ring: 220 80% 60%;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: hsl(var(--background));
+            color: hsl(var(--foreground));
+            line-height: 1.5;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        header {
+            margin-bottom: 40px;
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .logo {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: hsl(var(--primary));
+            color: hsl(0 0% 10%);
+            border-radius: 8px;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .brand-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: hsl(var(--foreground));
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: hsl(var(--muted-foreground));
+            font-size: 14px;
+        }
+
+        .upload-section {
+            margin-bottom: 32px;
+            padding: 24px;
+            background: hsl(var(--card));
+            border: 1px solid hsl(var(--border));
+            border-radius: 8px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        label {
+            font-size: 14px;
+            font-weight: 500;
+            color: hsl(var(--foreground));
+        }
+
+        .file-input-wrapper {
+            position: relative;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .file-input-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 20px;
+            border: 2px dashed hsl(var(--border));
+            border-radius: 8px;
+            background: hsl(var(--input));
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .file-input-label:hover {
+            border-color: hsl(var(--primary));
+            background: hsl(var(--secondary));
+        }
+
+        .file-input-label.has-file {
+            border-color: hsl(var(--primary));
+            background: hsl(var(--primary) / 0.05);
+        }
+
+        .file-input-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .file-icon {
+            font-size: 32px;
+            opacity: 0.5;
+        }
+
+        .file-input-text {
+            color: hsl(var(--muted-foreground));
+            font-size: 14px;
+        }
+
+        .file-name {
+            color: hsl(var(--foreground));
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .button-primary {
+            background: hsl(var(--primary));
+            color: hsl(0 0% 10%);
+        }
+
+        .button-primary:hover:not(:disabled) {
+            background: hsl(var(--primary) / 0.9);
+        }
+
+        .button-secondary {
+            background: hsl(var(--secondary));
+            color: hsl(var(--secondary-foreground));
+            border: 1px solid hsl(var(--border));
+        }
+
+        .button-secondary:hover:not(:disabled) {
+            background: hsl(var(--secondary) / 0.8);
+        }
+
+        .button-full {
+            width: 100%;
+            padding: 12px;
+        }
+
+        .loading {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            color: hsl(var(--muted-foreground));
+            font-size: 14px;
+        }
+
+        .loading.show {
+            display: flex;
+        }
+
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid hsl(var(--border));
+            border-top-color: hsl(var(--primary));
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .result-section {
+            display: none;
+        }
+
+        .result-section.show {
+            display: block;
+        }
+
+        .result-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            padding: 16px 20px;
+            background: hsl(var(--card));
+            border: 1px solid hsl(var(--border));
+            border-radius: 8px 8px 0 0;
+        }
+
+        .result-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .result-count {
+            color: hsl(var(--muted-foreground));
+            font-size: 14px;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            border: 1px solid hsl(var(--border));
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: hsl(var(--card));
+            font-size: 13px;
+        }
+
+        th {
+            background: hsl(var(--secondary));
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 1px solid hsl(var(--border));
+            white-space: nowrap;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        td {
+            padding: 12px 16px;
+            border-bottom: 1px solid hsl(var(--border));
+            color: hsl(var(--card-foreground));
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover {
+            background: hsl(var(--secondary) / 0.5);
+        }
+
+        .success-message {
+            display: none;
+            padding: 12px 16px;
+            background: hsl(142 76% 36% / 0.15);
+            border: 1px solid hsl(142 76% 36% / 0.3);
+            border-radius: 6px;
+            color: hsl(142 76% 76%);
+            font-size: 14px;
+            margin-top: 12px;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+        .main-nav {
+            margin-bottom: 24px;
+        }
+
+        .main-nav ul {
+            display: flex;
+            gap: 24px;
+            list-style: none;
+        }
+
+        .main-nav a {
+            text-decoration: none;
+            color: hsl(var(--muted-foreground));
+            font-size: 16px;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .main-nav a:hover {
+            color: hsl(var(--foreground));
+        }
+
+        .main-nav a.active {
+            color: hsl(var(--foreground));
+            border-bottom: 2px solid hsl(var(--primary));
+            padding-bottom: 4px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 16px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .result-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <div class="header-top">
+<!--            <div class="logo">-->
+<!--                <img th:src="@{/logo.svg}" alt="Logo">-->
+<!--            </div>-->
+            <div class="brand-name">LIGON TEAM</div>
+        </div>
+        <nav class="main-nav">
+            <ul>
+                <li><a th:href="@{/}" th:classappend="${currentPage == 'home' ? 'active' : ''}">Content Generator</a></li>
+                <li><a th:href="@{/images}" th:classappend="${currentPage == 'images' ? 'active' : ''}">Upload Images</a></li>
+                <li><a th:href="@{/orders}" th:classappend="${currentPage == 'orders' ? 'active' : ''}">Extract Order</a></li>
+            </ul>
+        </nav>
+        <h1>Amazon Order Extractor</h1>
+        <p class="subtitle">Upload your PDF file to extract order information</p>
+    </header>
+
+    <div class="upload-section">
+        <div class="form-group">
+            <label for="pdfFile">PDF File</label>
+            <div class="file-input-wrapper">
+                <input type="file" id="pdfFile" accept=".pdf" />
+                <label for="pdfFile" class="file-input-label" id="fileLabel">
+                    <div class="file-input-content">
+                        <div class="file-icon">📤</div>
+                        <div class="file-input-text">Click to upload or drag and drop</div>
+                        <div class="file-input-text" style="font-size: 12px;">PDF files only</div>
+                    </div>
+                </label>
+            </div>
+        </div>
+
+        <button class="button button-primary button-full" id="extractBtn" onclick="uploadPdf()" disabled>
+            Extract Orders
+        </button>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <span>Processing PDF...</span>
+        </div>
+    </div>
+
+    <div class="result-section" id="resultSection">
+        <div class="result-header">
+            <div>
+                <div class="result-title">Extracted Orders</div>
+                <div class="result-count" id="resultCount">0 orders found</div>
+            </div>
+            <button class="button button-secondary" id="copyBtn" onclick="copyToSheet()">
+                📋 Copy to Clipboard
+            </button>
+        </div>
+        <div class="table-wrapper">
+            <div id="result"></div>
+        </div>
+        <div class="success-message" id="successMessage">
+            ✓ Copied to clipboard! You can now paste into Google Sheets.
+        </div>
+    </div>
+</div>
+
+<script>
+    const fileInput = document.getElementById('pdfFile');
+    const fileLabel = document.getElementById('fileLabel');
+    const extractBtn = document.getElementById('extractBtn');
+    const loading = document.getElementById('loading');
+    const resultSection = document.getElementById('resultSection');
+    const successMessage = document.getElementById('successMessage');
+
+    fileInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            fileLabel.classList.add('has-file');
+            fileLabel.innerHTML = `
+                    <div class="file-input-content">
+                        <div class="file-icon">✓</div>
+                        <div class="file-name">${file.name}</div>
+                        <div class="file-input-text" style="font-size: 12px;">${(file.size / 1024).toFixed(2)} KB</div>
+                    </div>
+                `;
+            extractBtn.disabled = false;
+        }
+    });
+
+    async function uploadPdf() {
+        const file = fileInput.files[0];
+        if (!file) return;
+
+        extractBtn.disabled = true;
+        loading.classList.add('show');
+        resultSection.classList.remove('show');
+        successMessage.classList.remove('show');
+
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const response = await fetch('/extract-pdf', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+
+            // Count total orders
+            const orderCount = data.orders.length;
+            document.getElementById('resultCount').textContent = `${orderCount} order${orderCount !== 1 ? 's' : ''} found`;
+
+            // Render as table
+            let table = `<table>
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Order Date</th>
+                            <th>Buyer Name</th>
+                            <th>Seller Name</th>
+                            <th>Recipient Name</th>
+                            <th>Street Address</th>
+                            <th>City</th>
+                            <th>State</th>
+                            <th>ZIP Code</th>
+                            <th>Country</th>
+                            <th>Quantity</th>
+                            <th>Product Title</th>
+                            <th>SKU</th>
+                            <th>ASIN</th>
+                            <th>Condition</th>
+                            <th>Order Item ID</th>
+                            <th>Customizations</th>
+                            <th>Unit Price</th>
+                            <th>Item Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
+
+            data.orders.forEach(order => {
+                order.products.forEach(product => {
+                    table += `<tr>
+                            <td>${order.orderId || ''}</td>
+                            <td>${order.orderDate || ''}</td>
+                            <td>${order.buyerName || ''}</td>
+                            <td>${order.sellerName || ''}</td>
+                            <td>${order.shippingAddress?.recipientName || ''}</td>
+                            <td>${order.shippingAddress?.streetAddress || ''}</td>
+                            <td>${order.shippingAddress?.city || ''}</td>
+                            <td>${order.shippingAddress?.state || ''}</td>
+                            <td>${order.shippingAddress?.zipCode || ''}</td>
+                            <td>${order.shippingAddress?.country || ''}</td>
+                            <td>${product.quantity || ''}</td>
+                            <td>${product.productTitle || ''}</td>
+                            <td>${product.sku || ''}</td>
+                            <td>${product.asin || ''}</td>
+                            <td>${product.condition || ''}</td>
+                            <td>${product.orderItemId || ''}</td>
+                            <td>${product.customizations || ''}</td>
+                            <td>${product.unitPrice || ''}</td>
+                            <td>${product.itemSubtotal || ''}</td>
+                        </tr>`;
+                });
+            });
+
+            table += '</tbody></table>';
+            document.getElementById('result').innerHTML = table;
+            resultSection.classList.add('show');
+        } catch (error) {
+            alert('Error processing PDF: ' + error.message);
+        } finally {
+            loading.classList.remove('show');
+            extractBtn.disabled = false;
+        }
+    }
+
+    function copyToSheet() {
+        const table = document.querySelector('table');
+        let tsv = '';
+
+        // Chỉ lấy tbody rows (bỏ qua thead)
+        const tbody = table.querySelector('tbody');
+        if (tbody) {
+            for (let row of tbody.rows) {
+                for (let cell of row.cells) {
+                    tsv += cell.innerText + '\t';
+                }
+                tsv = tsv.trim() + '\n';
+            }
+        }
+
+        navigator.clipboard.writeText(tsv).then(() => {
+            successMessage.classList.add('show');
+            setTimeout(() => {
+                successMessage.classList.remove('show');
+            }, 3000);
+        }).catch(err => {
+            alert('Failed to copy to clipboard');
+        });
+    }
+</script>
+</body>
+</html>

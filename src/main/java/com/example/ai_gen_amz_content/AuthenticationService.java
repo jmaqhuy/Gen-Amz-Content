@@ -16,7 +16,7 @@ import java.util.Date;
 @Slf4j
 @Service
 public class AuthenticationService {
-    @Value("${app.security.jwt-secret}")
+    @Value("${app.security.jwt-secret:1bacddc4e4e0ae4ed91481908f82722d401ead234f699b37fed6bfbfbf83a9e0}")
     private String secretKey;
 
     private String generateToken() {

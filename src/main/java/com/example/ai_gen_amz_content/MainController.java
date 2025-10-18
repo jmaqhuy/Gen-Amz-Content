@@ -17,4 +17,10 @@ public class MainController {
         model.addAttribute("currentPage", "images");
         return "upload-images";
     }
+
+    @GetMapping("orders")
+    public String orders(Model model) {
+        model.addAttribute("currentPage", "orders");
+        return "extract-order";
+    }
 }
